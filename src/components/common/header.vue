@@ -9,6 +9,7 @@
                 </span>
                 <el-dropdown-menu slot="dropdown">
                     <el-dropdown-item command="info" v-loading.fullscreen.lock="fullscreenLoading">个人资料</el-dropdown-item>
+                    <el-dropdown-item command="QRcode">二维码</el-dropdown-item>
                     <el-dropdown-item command="loginout" v-loading.fullscreen.lock="fullscreenLoading">退出</el-dropdown-item>
                 </el-dropdown-menu>
             </el-dropdown>
@@ -32,6 +33,7 @@
         },
         methods:{
             handleCommand(command) {
+                const self = this;
                 if(command == 'loginout'){
                     //加载退出动画
                     this.fullscreenLoading = true;
@@ -41,12 +43,21 @@
                         this.$router.push('/login');            
                     }, 800);
                 }else if(command == 'info'){
-                    //加载退出动画
+                    //加载动画
                     this.fullscreenLoading = true;
                     setTimeout(() => {
                         this.fullscreenLoading = false;
                         this.$router.push('/info');            
                     }, 800);
+                }else if(command == 'QRcode'){
+                    self.$http.jsonp('http://localhost/manageSystem/api/index.php/Platform/QRcode',
+                          { params: { 'username': 'username'} })
+                          .then(function(res){
+                            
+                          },function(){
+                              console.log('显示错误!!');
+                              return false;
+                          });
                 }
             }
         }

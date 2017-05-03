@@ -13,7 +13,7 @@
      <div class="img-list">
       <ul id="container">
         <li v-for="img in list">
-          <img v-lazy="img" />
+          <img v-lazy="img" class="lazy"/>
         </li>
       </ul>
   </div>
@@ -67,4 +67,5 @@
   .el-carousel__item:nth-child(2n+1) {
     background-color: #d3dce6;
   }
+
 </style>

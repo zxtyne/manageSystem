@@ -107,7 +107,7 @@
       width: 100%;
       height: 100%;
       background-color: #363636;
-      background-image: url('../../../static/img/2.jpg');
+      background-image: url('../../../../static/img/1.jpg');
       background-size: cover;
       background-position: 50% 50%;
       background-repeat: no-repeat;
