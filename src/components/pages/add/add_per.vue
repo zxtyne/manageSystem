@@ -15,9 +15,13 @@
 		  <el-form-item label="确认密码" prop="checkPass">
 		    <el-input type="password" v-model="ruleForm.checkPass" auto-complete="off"></el-input>
 		  </el-form-item>
-		  <el-form-item label="年龄" prop="age">
-		    <el-input v-model.number="ruleForm.age"></el-input>
-		  </el-form-item>
+      <el-form-item label="性别" prop="sex">
+        <el-radio class="radio" v-model.sex="ruleForm.sex" label="1">男</el-radio>
+        <el-radio class="radio" v-model.sex="ruleForm.sex" label="2">女</el-radio>
+      </el-form-item>
+      <el-form-item label="年龄" prop="age">
+        <el-input v-model.number="ruleForm.age"></el-input>
+      </el-form-item>
 		  <el-form-item>
 		    <el-button type="primary" @click="submitForm('ruleForm')">提交</el-button>
 		    <el-button @click="resetForm('ruleForm')">重置</el-button>
@@ -60,7 +64,8 @@
           name: '',
           pass: '',
           checkPass: '',
-          age: ''
+          age: '',
+          sex: '',
         },
         rules: {
           name: [

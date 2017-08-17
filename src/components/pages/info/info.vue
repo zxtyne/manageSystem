@@ -140,7 +140,35 @@
       submitForm: function(formName) {
         this.$refs[formName].validate((valid) => {
           if (valid) {
-            alert('submit!');
+            this.$confirm('确定修改？', '提示', {
+            confirmButtonText: '确定',
+            cancelButtonText: '取消',
+            type: 'warning',
+            beforeClose: (action, instance, done) => {
+              if (action === 'confirm') {
+                instance.confirmButtonLoading = true;
+                instance.confirmButtonText = '修改中...';
+                setTimeout(() => {
+                  done();
+                  setTimeout(() => {
+                    instance.confirmButtonLoading = false;
+                  }, 300);
+                }, 1000);
+              } else {
+                done();
+              }
+              }
+          }).then(() => {
+            this.$message({
+              type: 'success',
+              message: '修改成功!'
+            });
+          }).catch(() => {
+            this.$message({
+              type: 'info',
+              message: '已取消修改'
+            });          
+          });
           } else {
             console.log('error submit!!');
             return false;

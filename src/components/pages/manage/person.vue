@@ -6,7 +6,10 @@
             </el-breadcrumb>
         </div>
 		<el-form :model="ruleForm" :rules="rules" ref="ruleForm" label-width="100px" class="demo-ruleForm" style="width: 50%">
-		  <el-form-item label="新密码" prop="pass">
+		  <el-form-item label="员工用户名" prop="name">
+        <el-input type="text" v-model="ruleForm.name" auto-complete="off"></el-input>
+      </el-form-item>
+      <el-form-item label="新密码" prop="pass">
 		    <el-input type="password" v-model="ruleForm.pass" auto-complete="off"></el-input>
 		  </el-form-item>
 		  <el-form-item label="确认密码" prop="checkPass">
@@ -44,10 +47,14 @@
       };
       return {
         ruleForm: {
+          name: '',
           pass: '',
           checkPass: '',
         },
         rules: {
+          name: [
+            { required: true, message: '请输入用户名', trigger: 'blur' },
+          ],
           pass: [
             { validator: validatePass, trigger: 'blur' }
           ],

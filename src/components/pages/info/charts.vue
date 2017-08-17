@@ -20,6 +20,7 @@
     export default {
         data: function(){
             return {
+                chartData: '',
                 mix:{
                     color:["#20a0ff","#13CE66","#F7BA2A","#FF4949","#61a0a8"],
                     legend: {
@@ -29,7 +30,8 @@
                         data: ["1K-5K", "5K-10K", "10K-15K", "15K-20K", "20K-25K", "25K以上"]
                     },
                     yAxis:{},
-                    series: [
+                    series: //this.chartData
+                        [
                         {
                             name: "平均薪酬",
                             type: "line",
@@ -76,6 +78,16 @@
         },
         components: {
             IEcharts
+        },
+        mounted: function() {
+          this.$http.get('../../../static/data/chart.json')
+                    .then(function(res){
+                        this.chartData = (res.body.data);
+                        console.log(this.chartData)
+                    },function(){
+                        console.log('error!!');
+                        return false;
+                    });
         }
     }
 </script>

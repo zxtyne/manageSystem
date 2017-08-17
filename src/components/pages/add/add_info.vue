@@ -20,8 +20,9 @@
 		  </el-form-item>
 		  <el-form-item label="活动区域" prop="region">
 		    <el-select v-model="ruleForm.region" placeholder="请选择活动区域">
-		      <el-option label="区域一" value="shanghai"></el-option>
-		      <el-option label="区域二" value="beijing"></el-option>
+		      <el-option label="上海" value="上海"></el-option>
+		      <el-option label="北京" value="北京"></el-option>
+          <el-option label="杭州" value="杭州"></el-option>
 		    </el-select>
 		  </el-form-item>
 		  <el-form-item label="活动时间" required>
@@ -44,10 +45,10 @@
 		  </el-form-item>
 		  <el-form-item label="活动性质" prop="type">
 		    <el-checkbox-group v-model="ruleForm.type">
-		      <el-checkbox label="线上活动" name="type"></el-checkbox>
-		      <el-checkbox label="地推活动" name="type"></el-checkbox>
-		      <el-checkbox label="线下活动" name="type"></el-checkbox>
-		      <el-checkbox label="单纯曝光" name="type"></el-checkbox>
+		      <el-checkbox label="宣讲会" name="type"></el-checkbox>
+		      <el-checkbox label="招聘会" name="type"></el-checkbox>
+		      <el-checkbox label="讲座" name="type"></el-checkbox>
+		      <el-checkbox label="社招" name="type"></el-checkbox>
 		    </el-checkbox-group>
 		  </el-form-item>
 		  <el-form-item label="特殊情况" prop="resource">
@@ -126,9 +127,35 @@
     },
     methods: {
       submitForm(formName) {
+        const self = this;
+        var dateStr = String(self.ruleForm.date);
+        console.log(typeof(dateStr))
+        let typeStr = self.ruleForm.type.join("-");
         this.$refs[formName].validate((valid) => {
           if (valid) {
-            alert('submit!');
+            self.$http.jsonp('http://localhost/manageSystem/api/index.php/Platform/new_activity', {
+                          params: {
+                            'name': self.ruleForm.name,
+                            'region': self.ruleForm.region,
+                            'date': dateStr,
+                            'type': typeStr,
+                            'resource': self.ruleForm.resource,
+                            'desc':self.ruleForm.desc
+                          }
+                        })
+                        .then( 
+                          (res) => { 
+                            if(res.status == 200 && res.body.statuscode == 0){
+                              self.$message({
+                                message: '新增成功',
+                                type: 'success'
+                              });
+                              self.$router.push('index')
+                            }else{
+                              self.$message.error('新增失败');
+                            }
+                        }).catch(
+                          (error) => { console.log(error) });
           } else {
             console.log('error submit!!');
             return false;

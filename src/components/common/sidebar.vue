@@ -13,7 +13,7 @@
                 <template slot="title"><i class="el-icon-date"></i>查看</template>
                 <el-menu-item index="charts">图表信息</el-menu-item>
                 <el-menu-item index="people">人员信息</el-menu-item>
-                <el-menu-item index="d3">D3图表</el-menu-item>
+                <el-menu-item index="d3">活动信息</el-menu-item>
                 <el-menu-item index="other">其他</el-menu-item>
             </el-submenu>
             <el-submenu index="4">

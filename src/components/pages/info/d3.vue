@@ -1,65 +1,166 @@
 <template>
-    <div>
-        <div class="crumbs">
-            <el-breadcrumb separator="/">
-                <el-breadcrumb-item><i class="el-icon-date"></i> 图表</el-breadcrumb-item>
-                <el-breadcrumb-item>D3图表</el-breadcrumb-item>
-            </el-breadcrumb>
-        </div>
-        <div class="plugins-tips">
-            D3 (or D3.js) is a JavaScript library for visualizing data using web standards.
-            <span> NPM地址：<a href="https://www.npmjs.com/package/d3" target="_blank">d3.js</a></span>
-        </div>
-          <svg width="500" height="270">
-            <g style="transform: translate(0, 10px)">
-              <path :d="line" />
-            </g>
-          </svg>
+<div>
+  <el-table
+    :data="tableData"
+    border
+    style="width: 100%">
+    <el-table-column
+      label="活动名称"
+      width="150">
+      <template scope="scope">
+        <el-icon name="information"></el-icon>
+        <span style="margin-left: 10px">{{ scope.row.name }}</span>
+      </template>
+    </el-table-column>
+
+    <el-table-column
+      label="活动区域"
+      width="140">
+      <template scope="scope">
+        <el-checkbox checked="true">{{ scope.row.region }}</el-checkbox>
+      </template>
+    </el-table-column>
+
+    <el-table-column
+      label="即时配送"
+      width="140">
+      <template scope="scope">
+          <el-switch
+            v-model="scope.row.value"
+            on-color="#13ce66"
+            off-color="#ff4949"
+            on-value="100"
+            off-value="0">
+          </el-switch>
+      </template>
+    </el-table-column>
+
+    <el-table-column
+      label="活动时间"
+      width="180">
+      <template scope="scope">
+        <el-icon name="time"></el-icon>
+        <span style="margin-left: 10px">{{ scope.row.date }}</span>
+      </template>
+    </el-table-column>
+
+    <el-table-column
+      label="详情"
+      width="120">
+      <template scope="scope">
+        <el-popover trigger="hover" placement="top">
+          <p>活动性质: {{ scope.row.type }}</p>
+          <p>特殊情况: {{ scope.row.resource }}</p>
+          <p>活动形式: {{ scope.row.descs }}</p>
+          <div slot="reference" class="name-wrapper">
+            <el-tag>{{ scope.row.name }}</el-tag>
+          </div>
+        </el-popover>
+      </template>
+    </el-table-column>
+
+    <el-table-column label="操作" width="140">
+      <template scope="scope">
+        <el-button
+          size="middle"
+          type="danger"
+          @click="handleDelete(scope.$index, scope.row, scope.row.id)">删除</el-button>
+      </template>
+    </el-table-column>
+
+  </el-table>
+  <div>
+      <el-pagination
+        @size-change="handleSizeChange"
+        @current-change="handleCurrentChange"
+        :current-page="currentPage4"
+        :page-sizes="[10, 20, 30, 40]"
+        :page-size="10"
+        layout="total, sizes, prev, pager, next, jumper"
+        :total="3"  
+        style="float:right">
+      </el-pagination>
     </div>
+  </div>
 </template>
 
 <script>
-    import * as d3 from 'd3';
-    export default {
-      name: 'vue-line-chart',
-      data() {
-        return {
-          data: [99, 71, 78, 25, 36, 92],
-          line: '',
-        };
+  export default {
+    data() {
+      return {
+        tableData: ''
+      }
+    },
+    mounted: function getData() {
+        let self = this;
+        self.$http.jsonp('http://localhost/manageSystem/api/index.php/Platform/activity_info',
+                  { params: { 'user':localStorage.getItem('ms_username') } })
+                  .then(function(res){
+                      if(res.body.statuscode == 0){
+                        //self.ruleForm.name = res.body.data.name;
+                        this.tableData = res.body.data
+                        console.log(res.body.data);
+                      }else{
+                        console.log('用户名错误!!');
+                        return false;
+                      } 
+                  },function(){
+                      console.log('error!!');
+                      return false;
+                  });
+    },
+    methods: {
+      handleEdit(index, row) {
+        console.log(index, row);
       },
-      mounted() {
-        this.calculatePath();
-      },
-      methods: {
-        getScales() {
-          const x = d3.scaleTime().range([0, 430]);
-          const y = d3.scaleLinear().range([210, 0]);
-          d3.axisLeft().scale(x);
-          d3.axisBottom().scale(y);
-          x.domain(d3.extent(this.data, (d, i) => i));
-          y.domain([0, d3.max(this.data, d => d)]);
-          return { x, y };
-        },
-        calculatePath() {
-          const scale = this.getScales();
-          const path = d3.line()
-            .x((d, i) => scale.x(i))
-            .y(d => scale.y(d));
-          this.line = path(this.data);
-        },
-      },
-    };
-</script>
-
-
-<style scoped>
-svg{
-  margin: 25px;
-}
-path{
-    fill: none;
-    stroke: #76BF8A;
-    stroke-width: 3px;
+      handleDelete(index, row, id) {
+        let self = this;
+            this.$confirm('确定删除', '提示', {
+            confirmButtonText: '确定',
+            cancelButtonText: '取消',
+            type: 'warning',
+            beforeClose: (action, instance, done) => {
+              if (action === 'confirm') {
+                instance.confirmButtonLoading = true;
+                instance.confirmButtonText = '删除中...';
+                setTimeout(() => {
+                  done();
+                  setTimeout(() => {
+                    instance.confirmButtonLoading = false;
+                    self.$http.jsonp('http://localhost/manageSystem/api/index.php/Platform/activity_delete',
+                      { params: { 'id':id } })
+                      .then(function(res){
+                          if(res.body.statuscode == 0){
+                            //self.ruleForm.name = res.body.data.name;
+                            this.tableData = res.body.data
+                            console.log(res.body.data);
+                          }else{
+                            console.log('用户名错误!!');
+                            return false;
+                          } 
+                      },function(){
+                          console.log('error!!');
+                          return false;
+                      });
+                  }, 300);
+                }, 1000);
+              } else {
+                done();
+              }
+            }
+          }).then(() => {
+            this.$message({
+              type: 'success',
+              message: '删除成功!'
+            });
+            self.$router.push('charts')
+          }).catch(() => {
+            this.$message({
+              type: 'info',
+              message: '已取消删除'
+            });          
+          });
+      }
+    }
   }
-</style>
+</script>

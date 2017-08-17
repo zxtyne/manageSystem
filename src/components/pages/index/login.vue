@@ -21,6 +21,7 @@
 </template>
 
 <script>
+    var jQuery = require('jquery');
     export default {
         data: function(){
             return {
